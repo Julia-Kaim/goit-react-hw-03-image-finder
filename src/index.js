@@ -8,3 +8,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <App />
   </React.StrictMode>
 );
+
+// api key:
+
+// 34856693-e3065cdefd04353a1725658fc
