@@ -1,11 +1,8 @@
 import React, { Component } from 'react';
-// import { createPortal } from 'react-dom';
+
 import PropTypes from 'prop-types';
-import * as basicLightbox from 'basiclightbox';
 
 import styles from './Modal.module.css';
-
-// const modalRoot = document.querySelector('#modalRoot');
 
 export default class Modal extends Component {
   componentDidMount() {
@@ -22,18 +19,15 @@ export default class Modal extends Component {
     }
   };
 
-
-
-  // render() {
-  //   return createPortal(
-  //     <div className={styles.overlay}>
-  //       <div className={styles.modal}>
-  //         <img src={this.props.pic} alt="" />
-  //       </div>
-  //     </div>,
-  //     modalRoot
-  //   );
-  // }
+  render() {
+    return (
+      <div className={styles.overlay}>
+        <div className={styles.modal}>
+          <img src={this.props.pic} alt="" />
+        </div>
+      </div>
+    );
+  }
 }
 
 Modal.propTypes = {
