@@ -67,11 +67,11 @@ export default class PixabayApi extends Component {
       this.fetchImg();
     }
   }
-
+  
+  
   processSubmit = query => {
     this.setState({ query });
   };
-
   handleLoadMore = () => {
     this.setState(prevState => ({
       page: prevState.page + 1,
