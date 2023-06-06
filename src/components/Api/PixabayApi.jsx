@@ -7,25 +7,20 @@ import Searchform from '../Searchform/Searchform';
 import ImageGallery from '../ImageGallery/ImageGallery';
 import Loader from '../Loader/Loader';
 
-export default class PixabayApi extends Component {
+class ImageFetcher extends Component {
   state = {
-    URL: 'https://pixabay.com/api/',
-    API_KEY: '34856693-e3065cdefd04353a1725658fc',
     pictures: [],
     error: '',
     status: 'idle',
-    page: 1,
-    query: '',
     totalHits: null,
   };
-  componentDidMount() {
-    this.fetchImg();
-  }
 
   fetchImg = async () => {
+    const { URL, API_KEY, query, page } = this.props;
+
     try {
       const response = await fetch(
-        `${this.state.URL}?q=${this.state.query}&page=${this.state.page}&key=${this.state.API_KEY}&image_type=photo&orientation=horizontal&per_page=12`
+        `${URL}?q=${query}&page=${page}&key=${API_KEY}&image_type=photo&orientation=horizontal&per_page=12`
       );
 
       if (response.ok) {
@@ -54,24 +49,46 @@ export default class PixabayApi extends Component {
     }
   };
 
-  componentDidUpdate(prevProps, prevState) {
-    if (this.state.query !== prevState.query) {
-      this.setState({ status: 'pending', pictures: [], page: 1 });
-      this.fetchImg();
-    }
+  // componentDidMount() {
+  //   this.fetchImg();
+  // }
+
+  componentDidUpdate(prevProps) {
     if (
-      this.state.query === prevState.query &&
-      this.state.page !== prevState.page
+      this.props.query !== prevProps.query ||
+      this.props.page !== prevProps.page
     ) {
-      this.setState({ status: 'pending' });
+      this.setState({ status: 'pending', pictures: [] });
       this.fetchImg();
     }
   }
-  
-  
+
+  render() {
+    const { pictures, status, totalHits } = this.state;
+    const { handleLoadMore } = this.props;
+
+    return (
+      <>
+        {pictures.length > 0 && <ImageGallery images={pictures} />}
+        {totalHits > pictures.length && <Button onClick={handleLoadMore} />}
+        {status === 'pending' && <Loader />}
+      </>
+    );
+  }
+}
+
+export default class PixabayApi extends Component {
+  state = {
+    URL: 'https://pixabay.com/api/',
+    API_KEY: '34856693-e3065cdefd04353a1725658fc',
+    page: 1,
+    query: '',
+  };
+
   processSubmit = query => {
     this.setState({ query });
   };
+
   handleLoadMore = () => {
     this.setState(prevState => ({
       page: prevState.page + 1,
@@ -79,15 +96,18 @@ export default class PixabayApi extends Component {
   };
 
   render() {
-    const { pictures, status, totalHits } = this.state;
+    const { URL, API_KEY, query, page } = this.state;
+
     return (
       <>
         <Searchform onSubmit={this.processSubmit} />
-        {pictures.length && <ImageGallery images={pictures} />}
-        {totalHits > pictures.length && (
-          <Button onClick={this.handleLoadMore} />
-        )}
-        {status === 'pending' && <Loader />}
+        <ImageFetcher
+          URL={URL}
+          API_KEY={API_KEY}
+          query={query}
+          page={page}
+          handleLoadMore={this.handleLoadMore}
+        />
         <ToastContainer autoClose={2000} />
       </>
     );
